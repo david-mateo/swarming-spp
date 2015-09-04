@@ -8,12 +8,13 @@ OBJS2D=$(SRCS:.cpp=_2d.o)
 OBJS3D=$(SRCS:.cpp=_3d.o)
 HDRS=$(SRCS:.cpp=.h)
 COMP= g++
-CFLAGS= -c -fopenmp -Ofast
-LFLAGS= -fopenmp -Ofast
-CFLAGS= -c -Wall -g  
-LFLAGS= -Wall -g
 CFLAGS= -c -Wall -O3 -ffast-math -fopenmp
 LFLAGS= -Wall -O3 -ffast-math -fopenmp
+CFLAGS= -c -Wall -O3 -ffast-math
+LFLAGS= -Wall -O3 -ffast-math
+#For debugging
+#CFLAGS= -c -Wall -g  
+#LFLAGS= -Wall -g
 
 all:	$(LIBS) $(LIB).h
 
