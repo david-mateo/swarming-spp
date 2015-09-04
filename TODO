@@ -1,0 +1,15 @@
+Improve Grid implementation
+    1. Memory allocated by the main program as a consistent
+    desing decision?
+    2. Efficient memory use, right now uses space to allocate
+    ALL the agents, which is a waste of memory.
+Good random procedure
+malloc vs declaration:
+    declaring the arrays as "float pos[ NUM_AGENTS * DIM]"
+    in **the main program** instead of allocating them at the
+    library level makes the program 10% faster.
+distance2 called a lot, make cache version
+Clean modular implementation of consensus protocol + interaciton
+More behaviors:
+    1. Vector noise in Vicsek
+    2. Advanced models with attraction and repulsion
