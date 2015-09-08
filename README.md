@@ -13,7 +13,7 @@ The default installation folder is `$(HOME)/bin/`; this folder can be changed by
 To use the libraries, add `#include <libspp.h>` to your code and compile using either `-libspp2d` or `-libspp3d` depending if you want the compute 2D or 3D swarm dynamics. You may need to specify the location of the library with `-Ibin/ -Lbin/` (or the appropiate location where the `.h` and the `.a`s have been installed).
 
 ##Description
-The `spp` library includes a collection of classes that model different aspects of self-propelled particles dynamics where each particle follows an arbitrary rule for the evolution of its velocity. This rule is also commonly refer to as "behavior" or "protocol."
+The spp library includes a collection of classes that model different aspects of self-propelled particles dynamics where each particle follows an arbitrary rule for the evolution of its velocity. This rule is also commonly refer to as "behavior" or "protocol."
 
 Classes included:
   * __Community__: [[src/community.h](src/community.h)] Handles a collection of `Agent` instances. Controls the dynamic of the swarm and computes its statistical properties such as mean values, order parameter, and correlations. Some models for swarm dynamic may require to expand on this class.
@@ -30,6 +30,7 @@ Classes included:
     * __Cartesian__: [[src/interaction.h](src/interaction.h)] Euclidean geometry with no boundary. The displacement is the vector difference of positions, the distance is the norm of that vector. Easy stuff. 
     * __CartesianPeriodic__: [[src/interaction.h](src/interaction.h)] Euclidean geometry with periodic boundary conditions in a fixed-size cube. 
   * __Grid__: [[src/grid.h](src/grid.h)] Class to store "Verlet lists" with information on the coarse location of each agent, so that agents only looks for neighbors in their local "neighborhood." To use in conjuction with a `Community` instance via `Community::setup_grid(*Grid)`. Using a Grid will speed up calculations with large number of agents considerably at the cost of increasing the memory used.
+
 The library follows a matryoshka structure: the `Community` contains an array of `Agent`s. Each `Agent` has a `Behavior`, which in turn has an `Interaction` that depends on the `Geometry` provided.
 
 ## Using the library

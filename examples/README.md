@@ -1,6 +1,6 @@
 ## Running the examples
-Some example programs using the `spp` library are provided under `examples/`. Each folder will contain
-* One or more C++ source code files to run different calcualtions (for example, one file for metric interaction and one for topological interaction.)
+Some example programs using the spp library are provided under `examples/`. Each folder contains
+* One or more C++ source code files to run different calcualtions (for example, one file for metric interaction and one for topological.)
 * A Makefile to compile the source code, with may or may not require additional parameters to compile such as the noise level or the outdegree of the interaction.
 * A Bash script to run the program for a range of possible parameters.
 
