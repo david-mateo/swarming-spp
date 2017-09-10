@@ -84,11 +84,9 @@ class Grid{
          * array but grid is serialized,
          *  grid[i] = list of all agents in slot *i* and adjacent.
          */
-        Agent** grid ; 
+        Agent** grid ;
         /* List with number of agents contained in each
          * entry of *grid*
          */
         int* occupation ;
 } ;
-
-

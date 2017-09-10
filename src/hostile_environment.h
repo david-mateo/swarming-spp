@@ -11,7 +11,7 @@
  *
  * This class is designed with a small number
  * of predators in mind. It should work with
- * any number of predators, but it does not 
+ * any number of predators, but it does not
  * implement the same performance improvements
  * for large number of agents for the predators.
  * TODO Test this with number of predators >1.
@@ -56,6 +56,8 @@ class HostileEnvironment : public Community{
         /* Move the predator towards the closest prey. If
          * the predator can catch the prey, remove the prey
          * from the community using the remove_dead() function.
+         * For some application, you may want to change this
+         * function so that it calls replace_dead() instead.
          * Returns the number of agents removed.
          */
         int hunt(double dt) ;
@@ -64,6 +66,11 @@ class HostileEnvironment : public Community{
          * in *ags*. The size of *ags* does not change.
          */
         void remove_dead(int ia) ;
+        /* Replace *ags[ia]* by a new agent with consensus
+         * velocity, generated as far as possible from
+         * the dead one.
+         */
+        virtual void replace_dead(int ia) ;
         /* Same as Community::print_posvel() but for
          * the position and velocity of the predators.
          */
@@ -89,4 +96,3 @@ class HostileEnvironment : public Community{
  * is therefore not thread-safe for parallelization.
  */
 HostileEnvironment spp_hostile_autostart(int num_agents, double speed, double box_size, Behavior* agsbeh, int num_predators, Behavior* predsbeh) ;
-

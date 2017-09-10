@@ -87,7 +87,7 @@ class Community{
          */
         void periodic_move(double dt) ;
         /* Sense the consensus velocities using
-         * each agent's behavior and store the 
+         * each agent's behavior and store the
          * result in *vel_sensed*.
          * Calls Agent->behavior->sense_velocity
          * and uses a Grid if setup. If using
@@ -134,7 +134,7 @@ class Community{
         double mean_velocity(double* meanvel) ;
         /* Return the order parameter of velocity alignment,
          * defined as
-         *      op = sqrt{|(1/N)\sum_{i=0}^N v_i|^2} / v0 
+         *      op = sqrt{|(1/N)\sum_{i=0}^N v_i|^2} / v0
          *  (the norm of the mean velocity divided by *v0*.)
          *  If the norm of each velocity is =< v0, then the
          *  order parameter is a number between 0 and 1.
@@ -182,7 +182,7 @@ class Community{
     protected:
         /* Number of agents. */
         int num_agents ;
-        /* positions of the agents 
+        /* positions of the agents
          *      Size: num_agents * DIM
          */
         double* pos ;
@@ -197,7 +197,7 @@ class Community{
         /* Box size, same in all directions. */
         double box_size ;
         /* False by default. Turns to True
-         * when a Grid instance is inseted 
+         * when a Grid instance is inseted
          * in Community through setup_grid().
          */
         bool use_grid ;
@@ -259,4 +259,3 @@ inline double fmodulo(double a, double b) {
     const double result = fmod(a,b);
     return result < 0. ? result+b: result ;
 }
-

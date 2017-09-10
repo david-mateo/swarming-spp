@@ -13,7 +13,7 @@ LFLAGS= -Wall -O3 -ffast-math -fopenmp
 CFLAGS= -c -Wall -O3 -ffast-math
 LFLAGS= -Wall -O3 -ffast-math
 #For debugging
-#CFLAGS= -c -Wall -g  
+#CFLAGS= -c -Wall -g
 #LFLAGS= -Wall -g
 
 all:	$(LIBS) $(LIB).h
@@ -25,15 +25,16 @@ $(LIB)3d.a:	$(OBJS3D)
 	ar -crs $@ $(OBJS3D)
 
 $(LIB).h:	$(HDRS)
-	cat $(HDRS) | awk '!/#include/' > $@ 
+	cat $(HDRS) | awk '!/#include/' > $@
 
 %_2d.o:	%.cpp
-	$(COMP) -DDIM=2 $(CFLAGS) $< -o $@  
+	$(COMP) -DDIM=2 $(CFLAGS) $< -o $@
 
 %_3d.o:	%.cpp
-	$(COMP) -DDIM=3 $(CFLAGS) $< -o $@  
+	$(COMP) -DDIM=3 $(CFLAGS) $< -o $@
 
 install: $(LIBS) $(LIB).h
+	mkdir -p $(ROOT)
 	cp $(LIB).h $(ROOT)
 	cp $(LIBS) $(ROOT)
 	ranlib $(ROOT)$(LIB)2d.a

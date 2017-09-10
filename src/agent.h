@@ -51,6 +51,10 @@ class Agent {
         double* get_vel() ;
         /* Return array of neighbors */
         Agent** get_neis() ;
+        /* Return the pointer to the behavior */
+        Behavior* get_behavior() ;
+        /* Changes the behavior of the agent. */
+        void set_behavior(Behavior* beh) ;
         /* Turn the agent into a copy
          * of *ag*. The agent and *ag*
          * are still independen
@@ -93,6 +97,8 @@ class Agent {
         int sense_victims(int num_agents, Agent* ags) ;
         /* Call the hunt function in *beh*. */
         int hunt(Agent* prey, double deltat) ;
+        /* Call the randomize_velocity in *beh*. */
+        void randomize_velocity() ;
     protected:
         /* position of the agent */
         double* pos ;

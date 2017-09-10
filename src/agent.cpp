@@ -60,6 +60,14 @@ Agent** Agent::get_neis(){
     return neis ;
 }
 
+Behavior* Agent::get_behavior(){
+    return beh ;
+}
+
+void Agent::set_behavior(Behavior* bb){
+    beh = bb ;
+}
+
 void Agent::copy(Agent* ag){
     /* Deep copy the values of
      * ag into self.
@@ -111,5 +119,9 @@ int Agent::sense_victims(int num_agents, Agent* ags){
 
 int Agent::hunt(Agent* prey, double deltat){
     return beh->hunt(this, prey, deltat) ;
+}
+
+void Agent::randomize_velocity(){
+    beh->randomize_velocity(this) ;
 }
 

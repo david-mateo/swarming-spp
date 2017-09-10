@@ -50,7 +50,7 @@ class Geometry {
  *          before using this function.
  *
  */
- 
+
 class Interaction {
     public:
         /* pure virtual, must be implemented */
@@ -104,7 +104,7 @@ class Cartesian: public Geometry {
 class CartesianPeriodic: public Geometry {
     public:
         CartesianPeriodic(double l) ;
-        /* The displacement between *x0* and *x1* is 
+        /* The displacement between *x0* and *x1* is
          * stored in *dis*. The displacement between *x0*
          * and *x1* is defined as the vector difference
          * between *x0* or any of its mirror copies
@@ -123,7 +123,7 @@ class CartesianPeriodic: public Geometry {
 
 // Implementations of Interaction
 
-/*  
+/*
  *  Metric interaction: two agents are neighbors
  *  if the distance2 between their positions
  *  (defined by the geometry) is less than or
@@ -136,6 +136,7 @@ class CartesianPeriodic: public Geometry {
  */
 class Metric : public Interaction {
     public:
+        Metric() {};
         /* Initialization reads a radius *r*
          * and stores its square in *rad2*.
          */
@@ -176,6 +177,7 @@ class Metric : public Interaction {
  */
 class Topologic : public Interaction {
     public:
+        Topologic() {};
         Topologic(int k , Geometry* g, double* dd) ;
         /* Copy A POINTER to the *k*
          * agents in *ags* closer to *a0* into *neis*.

@@ -1,5 +1,5 @@
 #include "hostile_environment.h"
-#include "agent.h"
+#include "grid.h"
 
 /*----------------------- Hostile class --------------------------*/
 HostileEnvironment::HostileEnvironment(int nags , double L, Agent* ags , double* p, double* v, int npreds , Agent* preds) : Community(nags, L, ags, p, v) {
@@ -39,6 +39,7 @@ int HostileEnvironment::hunt(double dt){
         if(kill){
             deaths +=1 ;
             this->remove_dead(iprey) ;
+            // this->replace_dead(iprey) ;
         }
     }
     return deaths ;
@@ -56,6 +57,19 @@ void HostileEnvironment::remove_dead(int ia){
      */
     num_agents -= 1 ;
     agents[ia].copy( agents + num_agents )  ;
+}
+
+void HostileEnvironment::replace_dead(int ia){
+    /* Replace the agent ia by a new agent placed at
+     * the opposite end of the periodic space and
+     * with random velocity.
+     */
+    int i ;
+    /* displace the agent to the opposite end of the box */
+    for(i=ia*DIM; i<(ia+1)*DIM; i++)
+        pos[i] = fmodulo( pos[i] + 0.5*box_size , box_size );
+    /* set the velocity to the sensed velocity in the new location */
+    agents[ia].randomize_velocity() ;
 }
 
 void HostileEnvironment::print_predators_posvel(){
@@ -82,9 +96,9 @@ HostileEnvironment spp_hostile_autostart(int num_agents, double speed, double bo
     double* ppos = spp_community_alloc_space( num_predators ) ;
     double* pvel = spp_community_alloc_space( num_predators ) ;
     Agent* preds = spp_community_build_agents(num_predators, ppos, pvel, neis, predsbeh) ;
-    
+
     HostileEnvironment hos = HostileEnvironment(num_agents, box_size , ags, pos, vel, num_predators, preds) ;
-    
+
     for(int i=0; i< num_predators * DIM; i++){
        ppos[i] = spp_frandom() * box_size ;
        pvel[i] = 0. ;
@@ -94,4 +108,3 @@ HostileEnvironment spp_hostile_autostart(int num_agents, double speed, double bo
     hos.randomize_directions(speed) ;
     return hos ;
 }
-

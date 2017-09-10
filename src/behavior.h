@@ -28,6 +28,8 @@ class Behavior {
         virtual void sense_velocity(Agent* ag, int num_agents, Agent* ags, double* new_vel) = 0;
         /* pure virtual, must be implemented */
         virtual void sense_noisy_velocity(Agent* ag, int num_agents, Agent* ags, double* new_vel) = 0;
+        /* pure virtual, must be implemented */
+        virtual void randomize_velocity(Agent* ag) = 0;
         /* optional */
         virtual int sense_danger(Agent* ag, int num_threats, Agent* threats, double* new_vel) {return 0;};
         /* optional */
@@ -65,6 +67,7 @@ class Behavior {
  */
 class Vicsek_consensus : public Behavior {
     public:
+        Vicsek_consensus() {} ;
         Vicsek_consensus(Interaction* ii, double v0, double noise) ;
         /* Store the mean velocity of *ag*'s neighbors in *new_vel*,
          * re-scaled to have a *v0* norm.
@@ -75,14 +78,34 @@ class Vicsek_consensus : public Behavior {
          * increases considerably the amount of computation required for this.
          */
         void rotate(double* v) ;
-        /* Sense velocity using sense_velocity() and then rotate the 
+        /* Sense velocity using sense_velocity() and then rotate the
          * sensed velocity *new_vel* using the rotate() method.
          */
         void sense_noisy_velocity(Agent* ag, int num_agents, Agent* ags, double* new_vel) ;
+        /* Sets the velocity of *ag* to a random vector with norm v0. */
+        void randomize_velocity(Agent* ag) ;
     protected:
         /* Fixed norm of the agent velocity.
          */
         double v0 ;
+} ;
+
+/**
+ * Same as Vicsek consensus but the
+ * noise is implemented as a vector added
+ * to the consensus velocity instead of an
+ * angle rotating the velocity.
+ * The model is discussed in
+ *      Chate et al. Phys. Rev. E 77, 046113  (2008)
+ */
+class Chate_consensus : public Vicsek_consensus {
+    public:
+        Chate_consensus() {} ;
+        Chate_consensus(Interaction* ii, double v0, double noise) : Vicsek_consensus(ii, v0, noise) {} ;
+        /* Sense velocity including a vectorial noise term
+         * proportional to the number of neighbors.
+         */
+        void sense_noisy_velocity(Agent* ag, int num_agents, Agent* ags, double* new_vel) ;
 } ;
 
 /*
@@ -93,7 +116,7 @@ class Vicsek_consensus : public Behavior {
  * protocol.
  * A threat is detected if any of
  * the *num_threats* agents in *threats*
- * is at a distance2 less than 
+ * is at a distance2 less than
  * *dectection_radius2*. If detected,
  * the agent proceds to align itself
  * in order to radially flee from
@@ -102,8 +125,9 @@ class Vicsek_consensus : public Behavior {
  */
 class Vicsek_prey : public Vicsek_consensus {
     public:
+        Vicsek_prey() : Vicsek_consensus() {} ;
         Vicsek_prey(Interaction* ii, double v0, double noise, double dradius) ;
-        /* If a threat is detected, return 1 and store the flee velocity 
+        /* If a threat is detected, return 1 and store the flee velocity
          * in *new_vel*. Else, do nothing and return 0.
          */
         int sense_danger(Agent* ag, int num_threats, Agent* threats, double* new_vel) ;
@@ -137,6 +161,7 @@ class Vicsek_prey : public Vicsek_consensus {
  */
 class Vicsek_predator : public Vicsek_consensus {
     public:
+        Vicsek_predator() : Vicsek_consensus() {} ;
         Vicsek_predator(Interaction* ii, double v0, double noise) : Vicsek_consensus(ii, v0, noise) {} ;
         /* Find which agent out of the *num_agents*
          * stored in *ags* is closer to the

@@ -17,11 +17,11 @@ double* Community::get_pos(){ return pos ; }
 
 double* Community::get_vel(){ return vel ; }
 
-Agent* Community::get_agents(){ return agents ;} 
+Agent* Community::get_agents(){ return agents ;}
 
 int Community::get_num_agents(){ return num_agents ; }
 
-double Community::get_box_size(){ return box_size ;} 
+double Community::get_box_size(){ return box_size ;}
 
 // Initialization
 
@@ -62,7 +62,7 @@ void Community::periodic_move(double dt){
 // Consensus protocol
 
 void Community::sense_velocities(double* vel_sensed){
-    /* 
+    /*
      * If using grid, this fills the grid from scratch
      * at every iteration.
      */
@@ -71,7 +71,7 @@ void Community::sense_velocities(double* vel_sensed){
     if(use_grid){
         fill_grid() ;
         for(int i=0; i<num_agents; i++){
-            neis = grid->get_neighborhood(agents+i , &num_neis ) ; 
+            neis = grid->get_neighborhood(agents+i , &num_neis ) ;
             agents[i].sense_velocity(num_neis , neis , vel_sensed + i*DIM) ;
         }
     }else{
@@ -81,7 +81,7 @@ void Community::sense_velocities(double* vel_sensed){
 }
 
 void Community::sense_noisy_velocities(double* vel_sensed){
-    /* 
+    /*
      * If using grid, this fills the grid from scratch
      * at every iteration.
      */
@@ -90,7 +90,7 @@ void Community::sense_noisy_velocities(double* vel_sensed){
     if (use_grid){
         fill_grid() ;
         for(int i=0; i<num_agents; i++){
-            neis = grid->get_neighborhood(agents+i , &num_neis ) ; 
+            neis = grid->get_neighborhood(agents+i , &num_neis ) ;
             agents[i].sense_noisy_velocity(num_neis , neis , vel_sensed + i*DIM) ;
         }
     }else{
@@ -206,7 +206,7 @@ void Community::correlation_histo(int n_bins, double v0, double* totalcorr, int*
 
     speed2 = this->mean_velocity(mv) ;
     norm = 1.0 / ( v0 * v0 - speed2 ) ;
-    
+
     for(ia=0; ia<num_agents; ia++){
         v1 = agents[ia].get_vel() ;
         for(ja=ia+1; ja<num_agents; ja++){
@@ -224,7 +224,7 @@ void Community::correlation_histo(int n_bins, double v0, double* totalcorr, int*
 
 // Other
 double Community::max_distance(){
-    /* 
+    /*
      * The furthest distance in an N-dimensional
      * periodic hypercube is that between the center
      * of the cube and any of its vertices.
@@ -262,7 +262,7 @@ Agent** spp_community_alloc_neighbors(int num_agents){
     }
 
 Agent* spp_community_build_agents(int num_agents, double* pos, double* vel, Agent** neis, Behavior* behavior){
-    /* 
+    /*
      * WARNING: all the agents share the same
      * *behavior* and the same *neis* pointer.
      * Sharing the same *neis* pointer may screw with

@@ -53,6 +53,43 @@ void Vicsek_consensus::sense_noisy_velocity(Agent* ag, int num_agents, Agent* ag
     this->rotate(new_vel) ;
 }
 
+void Vicsek_consensus::randomize_velocity(Agent* ag){
+    int i ;
+    double* vel = ag->get_vel() ;
+    double v2 = spp_random_vector(vel) ;
+    v2 = v0/sqrt(v2) ;
+    for(i=0; i<DIM; i++)
+        vel[i] *= v2 ;
+}
+
+
+/*
+ * Chate Consensus
+ * (same as Vicsek but with vectorial noise)
+ */
+void Chate_consensus::sense_noisy_velocity(Agent* ag, int num_agents, Agent* ags, double* new_vel){
+    int i, j ;
+    double  v2 = 0.0 ;
+    int num_neis ;
+    Agent** neis = ag->get_neis() ;
+    num_neis = inter->get_neighbors(ag, num_agents, ags, neis) ;
+
+    /* Start the vel to a random vector
+     * of norm noise*v0*num_neis */
+    v2 = spp_random_vector(new_vel) ;
+    for(i=0; i<DIM ; i++)
+        new_vel[i] *= noise*v0*num_neis/sqrt(v2) ;
+
+    for(j=0; j<num_neis ; j++){
+        for(i=0; i<DIM ; i++) new_vel[i] += neis[j]->get_vel()[i];
+        }
+
+    v2 = 0. ;
+    for(i=0; i<DIM ; i++) v2 += new_vel[i]*new_vel[i] ;
+    for(i=0; i<DIM ; i++) new_vel[i] *= v0/sqrt(v2) ;
+}
+
+
 /*
  * Vicsek Prey
  */

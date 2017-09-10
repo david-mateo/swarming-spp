@@ -7,7 +7,7 @@
 #endif
 
 Grid::Grid( int ns , double bs , int max_agents){
-    /* 
+    /*
      * Note that if ns<=3 this prints an error and
      * doesn't allocate memory but it does not
      * raise an exception.
@@ -15,8 +15,10 @@ Grid::Grid( int ns , double bs , int max_agents){
      */
     int is ;
     if( ns <= 3){
-        fprintf(stderr,"WARNING Grid: Invalid number of slots %i\n", ns) ;
+        fprintf(stderr,"libspp.Grid: ERROR - Invalid number of slots %i\n", ns) ;
         return ;
+    }else if(ns > 50){
+        fprintf(stderr,"libspp.Grid: WARNING - Number of slots (%i) is probably too big.\n", ns) ;
     }
     nslots = ns ;
     box_size = bs ;
@@ -45,7 +47,7 @@ int Grid::serial_index(double* pos){
 }
 
 void Grid::fill_grid(int num_agents, Agent* agents){
-    /* 
+    /*
      * Put every agent in its cell and all
      * the adjacent ones, meaning all that have an
      * n-dimensioanl index with compoenents equal or
@@ -61,9 +63,9 @@ void Grid::fill_grid(int num_agents, Agent* agents){
 #if DIM==2
         for(int i=ind[0]-1 ; i<=ind[0]+1 ; i++){
             for(int j=ind[1]-1 ; j<=ind[1]+1 ; j++){
-                serial_ind = (i<0?i+nslots:i%nslots) * nslots + 
+                serial_ind = (i<0?i+nslots:i%nslots) * nslots +
                              (j<0?j+nslots:j%nslots) ;
-                grid[serial_ind][occupation[serial_ind]] = agents[ia] ; 
+                grid[serial_ind][occupation[serial_ind]] = agents[ia] ;
                 occupation[serial_ind] += 1 ;
             }
         }
@@ -74,7 +76,7 @@ void Grid::fill_grid(int num_agents, Agent* agents){
                     serial_ind = (i<0?i+nslots:i%nslots) * nslots * nslots +
                                  (j<0?j+nslots:j%nslots) * nslots +
                                  (k<0?k+nslots:k%nslots) ;
-                    grid[serial_ind][occupation[serial_ind]] = agents[ia] ; 
+                    grid[serial_ind][occupation[serial_ind]] = agents[ia] ;
                     occupation[serial_ind] += 1 ;
                 }
             }
