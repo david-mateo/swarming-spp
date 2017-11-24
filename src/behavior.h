@@ -90,7 +90,7 @@ class Vicsek_consensus : public Behavior {
         double v0 ;
 } ;
 
-/**
+/*
  * Same as Vicsek consensus but the
  * noise is implemented as a vector added
  * to the consensus velocity instead of an
@@ -103,7 +103,9 @@ class Chate_consensus : public Vicsek_consensus {
         Chate_consensus() {} ;
         Chate_consensus(Interaction* ii, double v0, double noise) : Vicsek_consensus(ii, v0, noise) {} ;
         /* Sense velocity including a vectorial noise term
-         * proportional to the number of neighbors.
+         * proportional to the number of neighbors following
+         * the receipe from:
+         *      PHYSICAL REVIEW E 77, 046113  2008
          */
         void sense_noisy_velocity(Agent* ag, int num_agents, Agent* ags, double* new_vel) ;
 } ;

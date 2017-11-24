@@ -1,5 +1,17 @@
 #include "hostile_environment.h"
 #include "grid.h"
+#include "random.h"
+
+/* inlines */
+inline int modulo(int a, int b) {
+    const int result = a % b;
+    return result < 0 ? result+b: result ;
+}
+
+inline double fmodulo(double a, double b) {
+    const double result = fmod(a,b);
+    return result < 0. ? result+b: result ;
+}
 
 /*----------------------- Hostile class --------------------------*/
 HostileEnvironment::HostileEnvironment(int nags , double L, Agent* ags , double* p, double* v, int npreds , Agent* preds) : Community(nags, L, ags, p, v) {
@@ -38,8 +50,8 @@ int HostileEnvironment::hunt(double dt){
         kill  = predators[ip].hunt( agents+iprey , dt) ;
         if(kill){
             deaths +=1 ;
+            //this->replace_dead(iprey) ;
             this->remove_dead(iprey) ;
-            // this->replace_dead(iprey) ;
         }
     }
     return deaths ;
@@ -100,7 +112,7 @@ HostileEnvironment spp_hostile_autostart(int num_agents, double speed, double bo
     HostileEnvironment hos = HostileEnvironment(num_agents, box_size , ags, pos, vel, num_predators, preds) ;
 
     for(int i=0; i< num_predators * DIM; i++){
-       ppos[i] = spp_frandom() * box_size ;
+       ppos[i] = spp_random_uniform() * box_size ;
        pvel[i] = 0. ;
     }
     /* Starting positions and velocities */

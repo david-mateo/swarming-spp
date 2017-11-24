@@ -20,7 +20,7 @@ to create an executable called `vicsek_metric` that computes the order parameter
 ```
   make vicsek_topo eta=0.1
   ```
-  
+
 Running `vicsek_metric` or `vicsek_topo` will run for `NITER`=10000 iterations and print on the screen the values of the order parameter every `OUTPUT`=10 iterations, after running for `TRANSIENT`=1000 iterations.
 
 ####Run all cases
@@ -38,7 +38,9 @@ The output of this program requires non-trivial post-processing. The program pri
 distance    Total_Correlation    N
 ```
 
-so that the correlation `C(r)` is `C(r=distance)=Total_Corelation/N`. Each histogram is preceded by a line containing `#Iteration %i` and followed by two blank lines.
+so that the correlation `C(r)` is `C(r=distance)=Total_Corelation/N`. Each histogram is preceded by a line containing `#Iteration %i    Orderpar: %f` and followed by two blank lines.
+The susceptibility corresponding to each snapshot can be obtained by parsing the result of this program with [`get_chis.sh`](./susceptibility/get_chis.sh)
+To get the susceptibility at each snapshot, parse the
 
 ####Run one case
 Navigate to `examples/susceptibility/` and type
@@ -73,4 +75,3 @@ Navigate to `examples/predator/` and type
 
 where `{R}` is the desired value for the interaction radius. This will create an executable called `predator_metric_r{R}` that simulates a predator attack on a swarm and outputs the avoidance times.
 All the examples presented here allow the random seed to be passed as an argument on run, for example `./predator_metric_r1.4 53452345236`. In the case of the predator attack, it is mandatory to provide such argument. This is because the calculation of the mean avoidance time requires of a large sample of runs and it is imperative to have a good sampling of the initial configuration space for the whole swarm.
-

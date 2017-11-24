@@ -57,12 +57,14 @@ class Community{
          *      get_pos()[i*DIM : i*DIM + DIM]
          */
         double* get_pos() ;
+        void set_pos(double* p) {pos=p;} ;
         /* Return the pointer to the velocity array.
          * The velocity of agent *i* corresponds to
          * the values
          *      get_pos()[i*DIM : i*DIM + DIM]
          */
         double* get_vel() ;
+        void set_vel(double* v) {vel=v;} ;
         /* Return the pointer to the array of agents.*/
         Agent* get_agents() ;
         /* Return how many agents are in the community.*/
@@ -74,6 +76,13 @@ class Community{
          * [0:box_size] range.
          */
         void randomize_positions();
+        /* Distribute the agents in a regular grid.
+         * The spacing between agents is the same in all dimensions,
+         * and there is ceil(num_agents**(1/dim)) agents per dimension.
+         * If num_agents**(1/dim) is not an integer, the grid will be
+         * incomplete and the density will not be constant.
+         */
+        void regular_positions();
         /* Store random values in the velocity array *vel*.
          * Each random velocity has fixed norm *v0*.
          */
@@ -142,6 +151,16 @@ class Community{
          *  the agents are.
          */
         double order_parameter(double v0) ;
+        /* Compute the normalized fluctuations in velocity as defined in
+         *      PLoS Comput Biol 10, e1003697 (2014)
+         * The normalization assumes that all the agents have the same
+         * speed *v0* because it simplifies the normalization to
+         *      (1/N) sum_k |dv_k|^2 = <v^2> - <v>^2 = v0^2 - |V|^2 .
+         *
+         * The array *fluctuations* should be of size num_agents * dim,
+         * it can allocated with spp_community_alloc_space.
+         */
+        void velocity_fluctuations(double* fluctuations, double v0) ;
         /* Compute the correlations in velocity fluctuations in the system.
          * Mathematical formulation based on the work by Attanasi et al. in
          *      PLoS Comput Biol 10, e1003697 (2014)
@@ -163,9 +182,27 @@ class Community{
          */
         void correlation_histo(int n_bins, double v0, double* totalcorr, int* count) ;
         /* Return the distance between the two farthest points in
-        * the computation box with periodic boundary conditions.
-        */
+         * the computation box with periodic boundary conditions.
+         */
         double max_distance() ;
+        /* Build a "matrix" containing who is connected with whom.
+         * network[i][j] is a pointer to agent-i's j-th neighbor.
+         * num_neis contains the number of neighbors for each agent,
+         * so that the size of the array network[i] is num_neis[i].
+         * Both num_neis and network should be of length equal to
+         * the number of agents. The allocation for the network[i]
+         * arrays is done internally.
+         * Returns the total number of connexions (sum of num_neis).
+         */
+        int build_network(int* num_neis, Agent*** network) ;
+        /* Print the network obtained from build_network.
+         * Right now each agent is identified by its location
+         * in the *agents* array, i.e. something like
+         *       3 -- 7 ;
+         * means that the third agent is connected with the
+         * seventh.
+         */
+        void print_network(int* num_neis, Agent*** network) ;
         /* Start using a Grid to compute
          * the neighbors of each agent.
          * The Grid instance *g* has to
@@ -247,15 +284,3 @@ Agent* spp_community_build_agents(int num_agents, double* pos, double* vel, Agen
  * is therefore not thread-safe for parallelization.
  */
 Community spp_community_autostart(int num_agents, double speed, double box_size, Behavior* behavior) ;
-
-
-/* inlines */
-inline int modulo(int a, int b) {
-    const int result = a % b;
-    return result < 0 ? result+b: result ;
-}
-
-inline double fmodulo(double a, double b) {
-    const double result = fmod(a,b);
-    return result < 0. ? result+b: result ;
-}

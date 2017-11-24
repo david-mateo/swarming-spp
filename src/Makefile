@@ -2,7 +2,7 @@ ROOT=/usr/local/
 ROOT=$(HOME)/bin/
 LIB=libspp
 LIBS= $(LIB)2d.a $(LIB)3d.a
-SRCS=	agent.cpp	interaction.cpp	behavior.cpp grid.cpp community.cpp \
+SRCS=	random.cpp	agent.cpp	interaction.cpp	behavior.cpp grid.cpp community.cpp \
 		hostile_environment.cpp
 OBJS2D=$(SRCS:.cpp=_2d.o)
 OBJS3D=$(SRCS:.cpp=_3d.o)

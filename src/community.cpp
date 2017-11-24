@@ -1,5 +1,18 @@
 #include "community.h"
 #include "grid.h"
+#include "random.h"
+
+/* inlines */
+inline int modulo(int a, int b) {
+    const int result = a % b;
+    return result < 0 ? result+b: result ;
+}
+
+inline double fmodulo(double a, double b) {
+    const double result = fmod(a,b);
+    return result < 0. ? result+b: result ;
+}
+
 
 /*----------------------- Community class --------------------------*/
 
@@ -27,24 +40,43 @@ double Community::get_box_size(){ return box_size ;}
 
 void Community::randomize_positions(){
     for(int i=0; i<DIM*num_agents; i++)
-        pos[i] = spp_frandom() * box_size ;
+        pos[i] = spp_random_uniform() * box_size ;
 }
+
+void Community::regular_positions(){
+    int i;
+    int carry ;
+    int n = ceil(pow(num_agents, 1./DIM)) ; // number of agents per dimension
+    int grid_indx[DIM] ;
+    for(i=0; i<DIM; i++)
+        grid_indx[i] = 0 ;
+
+    for(int ia=0; ia<num_agents; ia++){
+        carry = 1 ;
+        for(i=0; i<DIM; i++){
+            pos[ia*DIM + i] = (box_size * grid_indx[i]) / n ;
+            grid_indx[i] += carry ;
+            if(grid_indx[i]==n){
+                grid_indx[i] = 0 ;
+                carry = 1 ;
+            }else{
+                carry = 0 ;
+            }
+        }
+    }
+}
+
 
 void Community::randomize_directions(double v0){
     /*
      * Fill the vel list with random
      * velocities of norm v0.
-     * Uses spp_random_vector from agent.cpp
-     * (imported through grid.h -> agent.h)
      */
-    int i, j ;
-    double v2 ;
-    for(i=0; i<num_agents; i++){
-        v2 = spp_random_vector( vel + i*DIM) ;
-        for(j=0; j<DIM ; j++)
-            vel[ i*DIM + j ] *= v0  / sqrt(v2)  ;
-    }
+    int i ;
+    for(i=0; i<num_agents; i++)
+        spp_random_vector(vel + i*DIM, v0) ;
 }
+
 
 // Kinematic
 
@@ -176,20 +208,34 @@ double Community::order_parameter(double v0){
     return sqrt(mv2)/v0 ;
 }
 
+void Community::velocity_fluctuations(double* fluctuations, double v0){
+    int i,ia ;
+    double mv[DIM] ;
+    double speed2, norm ;
+
+    speed2 = this->mean_velocity(mv) ;
+    norm = 1.0 / sqrt( v0 * v0 - speed2 ) ;
+    for(ia=0; ia<num_agents; ia++){
+        for(i=0; i<DIM; i++){
+            fluctuations[i + ia * DIM] = (vel[i + ia * DIM] - mv[i]) * norm ;
+        }
+    }
+
+}
 
 void Community::correlation_histo(int n_bins, double v0, double* totalcorr, int* count){
     /*
      * Compute the correlations in velocity fluctuations in the system.
-     * Mathematical formulation based on the work by Attanasi et al. in
-     *      PLoS Comput Biol 10, e1003697 (2014)
      *
-     * The function computes the total correlation *totalcorr* and the
-     * count of pairs of agents at a certain distance *count* separate
-     * instead of returning just *totalcorr/count* (Eq 2) to be able
-     * to compute correctly the cumulative correlation (Eq 3) and
-     * the susceptibility.
+     * The binsize is n_bins / (this->max_distance() * 1.000001).
+     * The max_distance is slighlty increased by the factor 1.000001 to
+     * avoid overflowing in
+     *      bin = int( dist * bindist ) ;
+     * when two agents are at _exactly_ *max_distance* from each other
+     * (which can happen, for example, if they are placed in a regular grid)
+     * this would be bin = n_bins but one needs bin <= n_bins-1.
      *
-     * WARNING: The normalizing factor *norm* assumes that all the agents
+     * Note that the normalizing factor *norm* assumes that all the agents
      * have velocity with modulus *v0*.
      *
      */
@@ -197,7 +243,7 @@ void Community::correlation_histo(int n_bins, double v0, double* totalcorr, int*
     double mv[DIM] ;
     double *v1, *v2 ;
     double dist , speed2 , norm ;
-    double bindist = n_bins / this->max_distance() ;
+    double bindist = n_bins / (this->max_distance() * 1.000001) ;
 
     for(i=0; i<n_bins; i++)
         totalcorr[i] = 0.0 ;
@@ -222,6 +268,7 @@ void Community::correlation_histo(int n_bins, double v0, double* totalcorr, int*
         totalcorr[i] *= norm ;
 }
 
+
 // Other
 double Community::max_distance(){
     /*
@@ -234,6 +281,40 @@ double Community::max_distance(){
      *      d^2 = L * N / 2^2
      */
     return box_size * sqrt(DIM / 4.) ;
+}
+
+int Community::build_network(int* num_neis, Agent*** network){
+    /*
+     * Note that this allocates memory to place the neighbors.
+     * This is an exception to the principle that all "big" arrays
+     * have to be explicitly allocated by the user, and is justified
+     * because without knowing how many neighbors each agent has one
+     * would need to allocate a num_agents x num_agents network.
+     * Too much wasted space.
+     *
+     * This method DOES NOT use a Grid. The Grid deep-copies agents
+     * and can screw the pointers here (especially for print_network).
+     *
+     */
+    int jn ;
+    int total_nneis = 0;
+    for(int i=0; i<num_agents; i++){
+        num_neis[i] = agents[i].get_neighbors(num_agents, agents) ;
+        total_nneis += num_neis[i] ;
+        network[i] = spp_community_alloc_neighbors(num_neis[i]) ;
+        for(jn=0; jn<num_neis[i]; jn++)
+            network[i][jn] = agents[i].get_neis()[jn] ;
+    }
+    return total_nneis ;
+}
+
+void Community::print_network(int* num_neis, Agent*** network){
+    int ia, ja ;
+    for(ia=0; ia<num_agents; ia++){
+        for(ja=0; ja<num_neis[ia]; ja++){
+            printf("%i -- %li ;\n", ia, network[ia][ja]-agents);
+        }
+    }
 }
 
 // Optimization related
@@ -259,7 +340,7 @@ Agent* spp_community_alloc_agents(int num_agents){
 
 Agent** spp_community_alloc_neighbors(int num_agents){
     return new Agent*[num_agents] ;
-    }
+}
 
 Agent* spp_community_build_agents(int num_agents, double* pos, double* vel, Agent** neis, Behavior* behavior){
     /*
@@ -273,6 +354,7 @@ Agent* spp_community_build_agents(int num_agents, double* pos, double* vel, Agen
        ags[ia] = Agent(pos + ia*DIM, vel + ia*DIM, neis, behavior) ;
     return ags ;
 }
+
 
 Community spp_community_autostart(int num_agents, double speed, double box_size, Behavior* behavior){
     double* pos  = spp_community_alloc_space(     num_agents) ;

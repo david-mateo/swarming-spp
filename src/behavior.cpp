@@ -1,5 +1,6 @@
 #include "behavior.h"
 #include "agent.h"
+#include "random.h"
 
 /*
  * Vicsek Consensus
@@ -22,14 +23,14 @@ void Vicsek_consensus::sense_velocity(Agent* ag, int num_agents, Agent* ags, dou
 
     for(j=0; j<num_neis ; j++){
         for(i=0; i<DIM ; i++) new_vel[i] += neis[j]->get_vel()[i];
-        }
+    }
 
     for(i=0; i<DIM ; i++) v2 += new_vel[i]*new_vel[i] ;
     for(i=0; i<DIM ; i++) new_vel[i] *= v0/sqrt(v2) ;
 }
 
 void Vicsek_consensus::rotate( double *v){
-    double theta = noise * 2.0 * M_PI * (spp_frandom()-0.5) ;
+    double theta = noise * 2.0 * M_PI * (spp_random_uniform()-0.5) ;
 #if DIM==2
     double tmp ;
     tmp  = cos(theta) * v[0] - sin(theta) * v[1] ;
@@ -37,13 +38,13 @@ void Vicsek_consensus::rotate( double *v){
     v[0] = tmp ;
 #elif DIM>2
     double axis[DIM] ;
-    double a2 , av = 0.0; /* a2 = axis*axis, av = axis*v */
+    double av = 0.0; /* = axis*v */
     int i ;
-    a2 = spp_random_vector(axis) ;
+    spp_random_vector(axis, 1.0) ; // unitary vector
     for(i=0; i<DIM ; i++) av += v[i]*axis[i] ;
 
     for(i=0; i<DIM ; i++){
-        v[i] = cos(theta)*v[i] + sin(theta)/sqrt( a2*v0*v0 - av*av)*( axis[i]*v0*v0 - v[i]*av) ;
+        v[i] = cos(theta)*v[i] + sin(theta)/sqrt( v0*v0 - av*av)*( axis[i]*v0*v0 - v[i]*av) ;
     }
 #endif
 }
@@ -54,12 +55,7 @@ void Vicsek_consensus::sense_noisy_velocity(Agent* ag, int num_agents, Agent* ag
 }
 
 void Vicsek_consensus::randomize_velocity(Agent* ag){
-    int i ;
-    double* vel = ag->get_vel() ;
-    double v2 = spp_random_vector(vel) ;
-    v2 = v0/sqrt(v2) ;
-    for(i=0; i<DIM; i++)
-        vel[i] *= v2 ;
+    spp_random_vector(ag->get_vel(), v0) ;
 }
 
 
@@ -76,15 +72,12 @@ void Chate_consensus::sense_noisy_velocity(Agent* ag, int num_agents, Agent* ags
 
     /* Start the vel to a random vector
      * of norm noise*v0*num_neis */
-    v2 = spp_random_vector(new_vel) ;
-    for(i=0; i<DIM ; i++)
-        new_vel[i] *= noise*v0*num_neis/sqrt(v2) ;
+    spp_random_vector(new_vel, noise*v0*num_neis) ;
 
     for(j=0; j<num_neis ; j++){
         for(i=0; i<DIM ; i++) new_vel[i] += neis[j]->get_vel()[i];
-        }
+    }
 
-    v2 = 0. ;
     for(i=0; i<DIM ; i++) v2 += new_vel[i]*new_vel[i] ;
     for(i=0; i<DIM ; i++) new_vel[i] *= v0/sqrt(v2) ;
 }

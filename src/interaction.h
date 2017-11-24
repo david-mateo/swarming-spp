@@ -153,7 +153,7 @@ class Metric : public Interaction {
          */
         int is_neighbor(Agent* a0 , Agent* a1) ;
         /* Return the interaction radius. */
-        double radius(){return sqrt(rad2);} ;
+        double radius() ;
     private:
         double rad2 ;
 } ;
@@ -203,6 +203,22 @@ class Topologic : public Interaction {
         int k ;
         double rad2 ;
         double* dists2 ;
+} ;
+
+/*
+ * NetworkInteraction: get the neighbors
+ * from a predefined network loaded on init.
+ */
+class NetworkInteraction : public Interaction {
+    public:
+        NetworkInteraction(Agent* ags, int* nneis, Agent*** net, Geometry* g) ;
+        int get_neighbors(Agent* a0 , int n_agents , Agent* ags, Agent** neis) ;
+        int is_neighbor(Agent* a0 , Agent* a1) ;
+        int get_agent_index(Agent* a) ;
+    private:
+        Agent* agents ;
+        Agent*** network ;
+        int* num_neis ;
 } ;
 
 /*

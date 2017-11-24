@@ -1,4 +1,4 @@
-class Behavior ; 
+class Behavior ;
 
 /*
  * Class describing one self-propagating agent
@@ -21,8 +21,8 @@ class Behavior ;
  *
  * WARNING: Expanding on Agent by creating a
  * class that inherits from it can lead to
- * errors if the size of the new class is 
- * different from Agent. The reason is that 
+ * errors if the size of the new class is
+ * different from Agent. The reason is that
  * Agent uses a **Agent to store the neighbors,
  * and an array of pointers don't work very
  * well with inheriting classes.
@@ -53,6 +53,10 @@ class Agent {
         Agent** get_neis() ;
         /* Return the pointer to the behavior */
         Behavior* get_behavior() ;
+        /* Changes the pos pointer of the agent. */
+        void set_pos(double* p) ;
+        /* Changes the vel pointer of the agent. */
+        void set_vel(double* v) ;
         /* Changes the behavior of the agent. */
         void set_behavior(Behavior* beh) ;
         /* Turn the agent into a copy
@@ -110,20 +114,3 @@ class Agent {
          * of the agent. */
         Behavior* beh ;
 } ;
-
-// Interface to generate random numbers in the spp library.
-
-/* Initialize the seed for the random number generator. */
-void spp_set_seed(long int seed) ;
-
-/* Return a double random number in [0,1] interval.
- * Statistical properties of the randoms not 
- * throroughly tested.
- */
-double spp_frandom() ; 
- 
-/* Store a random vector with norm <= 1.
- * Return the norm2 of that vector.
- * Calls spp_frandom.
- */
-double spp_random_vector(double* v) ;

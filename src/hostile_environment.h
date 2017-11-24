@@ -65,7 +65,7 @@ class HostileEnvironment : public Community{
          * reduces *num_agents* by one and rearranges the agents
          * in *ags*. The size of *ags* does not change.
          */
-        void remove_dead(int ia) ;
+        virtual void remove_dead(int ia) ;
         /* Replace *ags[ia]* by a new agent with consensus
          * velocity, generated as far as possible from
          * the dead one.

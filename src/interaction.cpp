@@ -87,6 +87,9 @@ int Metric::get_neighbors(Agent* a0, int n_agents, Agent* ags, Agent** neis){
     return n_neis ;
 }
 
+double Metric::radius(){
+    return sqrt(rad2);
+}
 
 /*
  * Topologic
@@ -133,6 +136,36 @@ void Topologic::look_around(Agent* a0, int n_agents, Agent* ags){
     rad2 = quickselect(dists2, n_agents, k ) ;
 }
 
+/*
+ * Network interaction
+ */
+NetworkInteraction::NetworkInteraction(Agent* ags, int* nneis, Agent*** net,  Geometry* gg){
+    agents = ags ;
+    num_neis = nneis ;
+    network = net ;
+    g = gg ;
+}
+
+int NetworkInteraction::get_neighbors(Agent* a0 , int n_agents , Agent* ags, Agent** neis){
+    /* Ignores the n_agents and ags given and uses the internal ones. */
+    int ia = get_agent_index(a0) ;
+    for(int ja=0; ja<num_neis[ia]; ja++)
+        neis[ja] = network[ia][ja] ;
+    return num_neis[ia] ;
+}
+
+int NetworkInteraction::is_neighbor(Agent* a0 , Agent* a1){
+    int ia = get_agent_index(a0) ;
+    for(int ja=0; ja<num_neis[ia]; ja++){
+        if(a1 == network[ia][ja])
+            return 1 ;
+    }
+    return 0 ;
+}
+
+int NetworkInteraction::get_agent_index(Agent* ag){
+    return ag - agents ;
+}
 /*
  * No interaction
  */
